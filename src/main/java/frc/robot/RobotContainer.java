@@ -13,8 +13,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.PIDController;
+import frc.robot.Constants.FlywheelConstants;
 import frc.robot.oi.DriverControls;
 import frc.robot.oi.DriverControlsXbox;
+import frc.robot.subsystems.Flywheel;
+import frc.robot.subsystems.FlywheelIONeo;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -28,6 +32,7 @@ public class RobotContainer {
 
   // Subsystems
   // TODO: Implement the flywheel subsystem
+  Flywheel m_flywheel;
 
   // Controller
   private DriverControls m_driverControls;
@@ -41,6 +46,10 @@ public class RobotContainer {
 
   private void configureSubsystems() {
     // TODO: Implement this method
+    m_flywheel =
+        new Flywheel(
+            new FlywheelIONeo(FlywheelConstants.kMotorPort),
+            new PIDController(FlywheelConstants.kP, FlywheelConstants.kI, FlywheelConstants.kD));
   }
 
   private void configureControllers() {
@@ -49,5 +58,9 @@ public class RobotContainer {
 
   private void configureButtonBindings() {
     // TODO: Implement this method
+    m_driverControls
+        .runFlywheel()
+        .onTrue(m_flywheel.setDesiredVelocityCommand(FlywheelConstants.kVelocitySetpoint));
+    m_driverControls.runFlywheel().onFalse(m_flywheel.setDesiredVelocityCommand(0));
   }
 }
